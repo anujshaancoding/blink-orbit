@@ -1,0 +1,46 @@
+#,Category,Edge case,How Blink Orbit handles it
+1,Money & formatting,Indian digit grouping,"All amounts use en-IN grouping (₹12,34,567 — never 1,234,567) via a single formatting module"
+2,Money & formatting,Very large portfolios overflowing layouts,"Lakh/crore compaction (₹4.56L, ₹2.3Cr) on the orb, chips and share card; whale persona (₹1Cr+) stress-tests it"
+3,Money & formatting,Negative amounts,"True minus outside the rupee sign (−₹1,240); losses render red — never hidden or spun"
+4,Money & formatting,Sub-rupee precision,Paise shown only where it matters (live interest meter); rounded elsewhere to avoid false precision
+5,Money & formatting,NaN/Infinity from a bad payload,"All formatters guard non-finite values to ""—"" so the UI can never render ₹NaN"
+6,Money & formatting,XIRR has no mathematical solution,"New users / all-negative flows return null → UI shows ""—"" with an explanation, not a fake 0%"
+7,Streaks & time,Saves near midnight,Streaks count local calendar days — 11:59 PM and 12:01 AM saves are consecutive days (unit-tested)
+8,Streaks & time,Today's auto-debit hasn't run yet,A streak stays alive if yesterday was saved; copy explains the 7 AM debit window
+9,Streaks & time,Duplicate saves in one day,Deduplicated by local day key before counting
+10,Streaks & time,Broken streak psychology,"Best-ever run is shown and copy reframes toward compounding — no shame, no loss-aversion pressure"
+11,Streaks & time,Month/year boundaries in runs,Streak runs across 31st→1st are unit-tested
+12,Borrow/LAMF honesty,User below the ₹50K pledge floor,"Borrow power is ₹0 — progress-to-unlock shown instead of pretend credit"
+13,Borrow/LAMF honesty,Market crash with an active loan,"Simulator states are exact: safe <15%, margin call at −15%, forced sale at −20%, with the top-up that restores LTV (unit-tested)"
+14,Borrow/LAMF honesty,Market crash with NO loan,"Simulator says the truth: nothing can be force-sold, the SIP just buys cheaper"
+15,Borrow/LAMF honesty,Interest accrual precision,"ACT/365 day count, negative clock skew clamped to 0, per-second tick only while the screen is mounted"
+16,Borrow/LAMF honesty,Unpledge delay surprise,2–4 working day unpledge time stated upfront in the fine-print card — not buried in a PDF
+17,Network & states,Slow network,"Skeleton loaders on all screens; latency injectable (0/900/3500ms) from the demo panel"
+18,Network & states,Request failure,"Friendly error state that says funds are unaffected + one-tap retry; injected failures auto-heal to prove retry works"
+19,Network & states,Offline with cached data,"Stale snapshot served with a persistent ""last synced"" banner"
+20,Network & states,Offline with no cache,Dedicated empty state explaining a snapshot will be kept once online
+21,Network & states,Race between rapid refetches,A request sequence counter drops superseded responses (fast persona switching can't interleave)
+22,Sharing & virality,Double-tap on share,Guard flag prevents duplicate capture/share-sheet launches
+23,Sharing & virality,No share targets on device,Sharing.isAvailableAsync checked → graceful fallback message suggesting a screenshot
+24,Sharing & virality,User cancels the share sheet,Treated as a non-event — never shown as an error
+25,Sharing & virality,Day-0 user's share card,"Gets an honest ""the habit starts tonight"" card — no fake numbers to flex"
+26,Sharing & virality,Garbled referral codes,"PRIYA51 → ""Priya""; empty/invalid codes degrade to a generic invite, never an error screen"
+27,Milestones,Achievements after a broken streak,Streak milestones use best-ever run — achievements never un-achieve (unit-tested)
+28,Milestones,Many milestones achieved at once,"Backfill rule: only the newest celebrates, older ones marked silently — no modal spam on persona switch/reinstall"
+29,Milestones,Re-celebration on app restart,Celebrated ids persist per persona in AsyncStorage
+30,Rewind,A month with zero saves,"Single honest ""quiet month"" slide instead of empty celebration"
+31,Rewind,Withdrawal months / reduce-motion,"Withdrawal gets a no-guilt ""life happened"" slide; auto-advance pauses under Reduce Motion (tap-only)"
+32,Squad,Whale vs small saver fairness,"Ranked by consistency (days/30) only, ties by streak — ₹2,001/day cannot outrank ₹21/day by amount"
+33,Navigation,Stale/unknown asset deep link,"Asset drill-down for an id not in the portfolio shows a graceful ""not in your orbit"" state"
+34,Gestures,Slingshot over-pull,Rubber-band asymptote caps travel — the orb can never be dragged off-screen; horizontal pans fall through to scroll
+35,Gestures,Haptic spam while holding the slingshot,Arm haptic is edge-triggered once per crossing — never per-frame
+36,Gestures,Reduce Motion vs gestures,Slingshot disabled entirely; tap navigation and accessibility hint adapt
+37,Gestures,Slider precision & a11y,"Shared BlinkSlider: UI-thread pan, discrete snapping, threshold markers, screen-reader increment/decrement actions"
+38,Borrow sandbox,Fully-drawn credit line / ₹0 draw,"Dead slider replaced with repay framing; ₹0 priced honestly: ""an unused credit line is free, forever"""
+39,SIP pause,Expired pauses,"Pause state persists per persona and auto-expires — a lapsed pause reads as running, never stuck"
+40,SIP pause,User fear about paused money,Copy states invested money keeps compounding and withdrawals stay available; pausing affects future debits only
+41,Accessibility,Reduce Motion (system),"Honored globally: orbit freezes, count-ups snap, skeletons stop pulsing, confetti skipped, press-scale becomes opacity"
+42,Accessibility,Large font settings,"Font scaling capped at 1.4× so number-dense rows ellipsize instead of clipping/overlapping"
+43,Accessibility,Screen readers,"Orb, streak dots, squad rows and all sliders carry descriptive labels; sliders are role=adjustable"
+44,Layout,Small phones / tablets / notches,Orb clamps 260–360px; safe-area insets respected on notched devices
+45,Haptics,Haptic fatigue,"Contextual only (success vs warning pulse, selection ticks, edge-triggered arm) — never fired in loops"
